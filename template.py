@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 DEFAULT_RULES = "5,78,150,222,295,367,439"
 CLOSING_PUNCTUATION = set("，。！？；：、）》】」』〕〉”’…％")
 OPENING_PUNCTUATION = set("（《【「『〔〈“‘")
+COMPACT_PUNCTUATION = set("，。！？；：、")
 
 
 def parse_rules(value: str) -> list[int]:
@@ -34,8 +35,13 @@ def draw_justified_line(
     right: int,
     y: int,
     fill: tuple[int, int, int],
+    compact_font: ImageFont.FreeTypeFont,
+    font_size: int,
 ) -> None:
-    widths = [draw.textlength(char, font=font) for char in line]
+    widths = [
+        draw.textlength(char, font=compact_font if char in COMPACT_PUNCTUATION else font)
+        for char in line
+    ]
     natural_width = sum(widths)
     if natural_width > right - left:
         raise ValueError(f"line is too long for the configured text box: {line}")
@@ -49,7 +55,11 @@ def draw_justified_line(
     extra = (right - left - natural_width) / max(1, spacing_slots)
     x = float(left)
     for index, (char, width) in enumerate(zip(line, widths)):
-        draw.text((round(x), y), char, font=font, fill=fill)
+        if char in COMPACT_PUNCTUATION:
+            punctuation_y = y + round(font_size * (0.40 if char in "，。" else 0.22))
+            draw.text((round(x), punctuation_y), char, font=compact_font, fill=fill)
+        else:
+            draw.text((round(x), y), char, font=font, fill=fill)
         x += width
         if index < len(line) - 1 and (
             char not in CLOSING_PUNCTUATION
@@ -64,6 +74,7 @@ def render(args: argparse.Namespace) -> Path:
     image = Image.open(args.paper).convert("RGB")
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(str(args.font), args.font_size)
+    compact_font = ImageFont.truetype(str(args.font), max(8, round(args.font_size * 0.62)))
     rules = parse_rules(args.rules)
     lines = load_lines(args.text_file)
     if len(lines) > len(rules) - 1:
@@ -74,7 +85,7 @@ def render(args: argparse.Namespace) -> Path:
         indent = args.first_line_indent if index == 0 else 0
         left = args.left + indent
         y = band_top + (band_bottom - band_top - font.getbbox(line)[3]) // 2 - args.baseline_adjust
-        draw_justified_line(draw, line, font, left, args.right, y, args.ink)
+        draw_justified_line(draw, line, font, left, args.right, y, args.ink, compact_font, args.font_size)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     image.save(args.output)

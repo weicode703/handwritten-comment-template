@@ -37,7 +37,7 @@ Important options:
 - `--font-size`: font size in pixels.
 - `--ink R G B`: text color.
 
-The default ruled-line coordinates and text boundaries match the included `assets/ruled-paper.png`; change them for another paper image. Lines are vertically centered within each pair of rules.
+The default ruled-line coordinates and text boundaries match the included `assets/ruled-paper.png`; change them for another paper image. Lines are vertically centered within each pair of rules. Chinese commas, periods, question marks, exclamation marks, semicolons, colons, and enumeration commas render at about 62% of the main font size and stay visually close to adjacent text.
 
 ## Font
 
