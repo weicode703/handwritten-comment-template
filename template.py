@@ -50,14 +50,14 @@ def draw_justified_line(
     x = float(left)
     for index, (char, width) in enumerate(zip(line, widths)):
         draw.text((round(x), y), char, font=font, fill=fill)
-        x += width + extra
+        x += width
         if index < len(line) - 1 and (
-            char in CLOSING_PUNCTUATION
-            or line[index + 1] in CLOSING_PUNCTUATION
-            or char in OPENING_PUNCTUATION
-            or line[index + 1] in OPENING_PUNCTUATION
+            char not in CLOSING_PUNCTUATION
+            and line[index + 1] not in CLOSING_PUNCTUATION
+            and char not in OPENING_PUNCTUATION
+            and line[index + 1] not in OPENING_PUNCTUATION
         ):
-            x -= extra
+            x += extra
 
 
 def render(args: argparse.Namespace) -> Path:
