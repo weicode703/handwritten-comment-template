@@ -7,6 +7,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 DEFAULT_RULES = "5,78,150,222,295,367,439"
+CLOSING_PUNCTUATION = set("，。！？；：、）》】」』〕〉”’…％")
+OPENING_PUNCTUATION = set("（《【「『〔〈“‘")
 
 
 def parse_rules(value: str) -> list[int]:
@@ -37,11 +39,25 @@ def draw_justified_line(
     natural_width = sum(widths)
     if natural_width > right - left:
         raise ValueError(f"line is too long for the configured text box: {line}")
-    extra = (right - left - natural_width) / max(1, len(line) - 1)
+    spacing_slots = sum(
+        current not in CLOSING_PUNCTUATION
+        and following not in CLOSING_PUNCTUATION
+        and current not in OPENING_PUNCTUATION
+        and following not in OPENING_PUNCTUATION
+        for current, following in zip(line, line[1:])
+    )
+    extra = (right - left - natural_width) / max(1, spacing_slots)
     x = float(left)
-    for char, width in zip(line, widths):
+    for index, (char, width) in enumerate(zip(line, widths)):
         draw.text((round(x), y), char, font=font, fill=fill)
         x += width + extra
+        if index < len(line) - 1 and (
+            char in CLOSING_PUNCTUATION
+            or line[index + 1] in CLOSING_PUNCTUATION
+            or char in OPENING_PUNCTUATION
+            or line[index + 1] in OPENING_PUNCTUATION
+        ):
+            x -= extra
 
 
 def render(args: argparse.Namespace) -> Path:
