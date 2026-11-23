@@ -25,13 +25,13 @@ Create a UTF-8 text file with one line per writing row. Keep each line short eno
 python template.py `
   --paper assets/ruled-paper.png `
   --text-file examples/comment.txt `
-  --first-line-indent 24 `
+  --first-line-indent 48 `
   --output output/comment.png
 ```
 
 Important options:
 
-- `--first-line-indent`: extra horizontal offset for the first row, in pixels. Set to `0` for no indentation.
+- `--first-line-indent`: extra horizontal offset for the first row, in pixels. The default is 48 px (about two characters at the default font size). Set to `0` for no indentation.
 - `--left` / `--right`: shared text boundaries in image pixels.
 - `--rules`: comma-separated y coordinates of the ruled lines, from top to bottom.
 - `--font-size`: font size in pixels.

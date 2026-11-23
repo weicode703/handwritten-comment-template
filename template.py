@@ -74,7 +74,7 @@ def main() -> None:
     parser.add_argument("--rules", default=DEFAULT_RULES, help="Comma-separated horizontal rule y coordinates")
     parser.add_argument("--left", type=int, default=34)
     parser.add_argument("--right", type=int, default=520)
-    parser.add_argument("--first-line-indent", type=int, default=24)
+    parser.add_argument("--first-line-indent", type=int, default=48)
     parser.add_argument("--font-size", type=int, default=24)
     parser.add_argument("--baseline-adjust", type=int, default=2)
     parser.add_argument("--ink", type=int, nargs=3, default=(49, 49, 49), metavar=("R", "G", "B"))
