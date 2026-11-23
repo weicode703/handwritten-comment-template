@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+.venv/
+output/*.png
+edit_handwriting.py
+write_comment.py
